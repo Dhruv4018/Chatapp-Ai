@@ -25,8 +25,9 @@ app.post('/getResponse', (req, res) => {
 
 
 })
+// main process
 
-app.use('*',()=>{
+app.get('*',()=>{
     res.status(404).json({
         msg:'bad request'
     })
