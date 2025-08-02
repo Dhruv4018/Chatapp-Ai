@@ -9,22 +9,30 @@ app.use(bodyParser.json());
 app.post('/getResponse', (req, res) => {
     console.log(req.body.question);
     const genAI = new GoogleGenerativeAI('AIzaSyCBCu8a0QP4DZEByM3SYZbAxm6AzMnaNf8')
-    const model =  genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     model.generateContent(req.body.question).then(result => {
         console.log(result.response.text());
         const response = result.response.text()
         res.status(200).json({
             response: response
         })
-    }).catch(err=>{
-        console.log(err , "error hai bhai");
+    }).catch(err => {
+        console.log(err, "error hai bhai");
         res.status(500).json({
-            error:err
+            error: err
         })
     })
 
 
 })
+
+app.use('*',()=>{
+    res.status(404).json({
+        msg:'bad request'
+    })
+})
+
+
 
 
 
