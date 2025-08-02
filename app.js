@@ -1,33 +1,44 @@
-const express = require('express');
+const express = require('express')
 const app = express();
 const bodyParser = require('body-parser');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+//require('dotenv').config();
 
 app.use(bodyParser.json());
 
-app.post('/getResponse', async (req, res) => {
-    try {
-        const userQuestion = req.body.question;
-        console.log("User Question:", userQuestion);
+app.post('/getResponse', (req, res) => {
+    console.log(req.body.question);
+    const genAI = new GoogleGenerativeAI('AIzaSyCBCu8a0QP4DZEByM3SYZbAxm6AzMnaNf8')
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    model.generateContent(req.body.question).then(result => {
+        console.log(result.response.text());
+        const response = result.response.text()
+        res.status(200).json({
+            response: response
+        })
+    }).catch(err => {
+        console.log(err, "error hai bhai");
+        res.status(500).json({
+            error: err
+        })
+    })
 
-        // Directly using API key
-        const genAI = new GoogleGenerativeAI('AIzaSyCBCu8a0QP4DZEByM3SYZbAxm6AzMnaNf8');
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-        const result = await model.generateContent(userQuestion);
-        const response = result.response.text();
+})
+// main process
 
-        console.log("Gemini Response:", response);
-        res.status(200).json({ response });
-    } catch (err) {
-        console.error("Error:", err);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
+app.get('/',()=>{
+    res.status(404).json({
+        msg:'bad request'
+    })
+})
 
-// fallback for unknown routes
-app.get('/', (req, res) => {
-    res.status(404).json({ msg: 'bad request' });
-});
 
-module.exports = app;
+
+
+
+module.exports = app
+
+
+
+// 'AIzaSyCBCu8a0QP4DZEByM3SYZbAxm6AzMnaNf8'
